@@ -17,17 +17,9 @@ func createConfigurationFromSchedule(sched *schedule.Schedule, topo *topology.To
 	gclConfig := &schedule.GclConfiguration{
 		Configs: []*schedule.ConfigMap{},
 	}
-	for _, node := range topo.Nodes {
-		var nodeID string
 
-		switch nt := node.NodeType.(type) {
-		case *topology.Node_Bridge:
-			nodeID = nt.Bridge.GetId()
-		case *topology.Node_Endnode:
-			nodeID = nt.Endnode.GetId()
-		default:
-			continue // Unknown node type, skip
-		}
+	for _, node := range topo.Nodes {
+		nodeID := node.Name
 
 		for _, port := range node.Ports {
 			configMap := &schedule.ConfigMap{
@@ -78,11 +70,11 @@ func findAllPortsOnDevices(topology *topology.Topology) (map[string][]string, er
 	for _, link := range topology.Links {
 
 		//"source": "switch-c4.Port3"
-		source := strings.Split(link.GetSource(), ".")
+		source := strings.Split(link.SourcePort, ".")
 		srcDevice := source[0]
 		srcPort := source[1]
 
-		dest := strings.Split(link.GetTarget(), ".")
+		dest := strings.Split(link.TargetPort, ".")
 		dstDevice := dest[0]
 		dstPort := dest[1]
 
